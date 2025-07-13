@@ -43,9 +43,11 @@ builder.Services.AddAuthentication(options =>
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+builder.Services.AddScoped<IGenerationService, GenerationService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IDeploymentService, DeploymentService>();
+builder.Services.AddScoped<IPromptService, PromptService>();
+builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();

@@ -13,12 +13,12 @@ namespace Code.Generator.API.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectService _projectService;
-        private readonly IOpenAIService _openAIService;
+        private readonly IGenerationService _generationService;
 
-        public ProjectsController(IProjectService projectService, IOpenAIService openAIService)
+        public ProjectsController(IProjectService projectService, IGenerationService generationService)
         {
             _projectService = projectService;
-            _openAIService = openAIService;
+            _generationService = generationService;
         }
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -76,7 +76,7 @@ namespace Code.Generator.API.Controllers
 
             try
             {
-                var mermaidDiagram = await _openAIService.GenerateMermaidDiagramAsync(project.Requirements);
+                var mermaidDiagram = await _generationService.GenerateMermaidDiagramAsync(project.Requirements);
 
                 var updateDto = new UpdateProjectDto
                 {
@@ -105,7 +105,12 @@ namespace Code.Generator.API.Controllers
 
             try
             {
-                var generatedCode = await _openAIService.GenerateCodeAsync(project.MermaidDiagram, project.Requirements);
+                // Temporary : Backend and frontend tech are hardcoded for simplicity : will be replaced with user input in the future
+                string backendTech = "ASP.NET Core";
+                 string frontendTech = "Angular";
+                // End of temporary hardcoded values
+
+                var generatedCode = await _generationService.GenerateCodeAsync(project.MermaidDiagram, project.Requirements, backendTech, frontendTech);
 
                 var updateDto = new UpdateProjectDto
                 {

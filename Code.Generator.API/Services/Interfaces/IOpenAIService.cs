@@ -1,8 +1,9 @@
-﻿namespace Code.Generator.API.Services.Interfaces
+﻿using Code.Generator.API.Models;
+
+namespace Code.Generator.API.Services.Interfaces
 {
     public interface IOpenAIService
     {
-        Task<string> GenerateMermaidDiagramAsync(string requirements);
-        Task<string> GenerateCodeAsync(string mermaidDiagram, string requirements);
+        Task<string> CallOpenAIAsync(Prompt prompt);
     }
 }

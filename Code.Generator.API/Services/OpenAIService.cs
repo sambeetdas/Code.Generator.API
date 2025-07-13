@@ -1,5 +1,6 @@
 ﻿using Code.Generator.API.Models;
 using Code.Generator.API.Services.Interfaces;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -7,6 +8,7 @@ namespace Code.Generator.API.Services
 {
     public class OpenAIService : IOpenAIService
     {
+
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
@@ -15,61 +17,20 @@ namespace Code.Generator.API.Services
             _httpClient = httpClient;
             _configuration = configuration;
         }
-
-        public async Task<string> GenerateMermaidDiagramAsync(string requirements)
-        {
-            var prompt = $@"Based on the following requirements, generate a detailed Mermaid diagram that represents the system architecture and flow. Only return the Mermaid code without any explanation:
-
-Requirements: {requirements}
-
-Please create a comprehensive diagram that includes:
-1. System components
-2. Data flow
-3. User interactions
-4. API endpoints if applicable
-5. Database entities if applicable
-
-Return only the Mermaid diagram code starting with the diagram type (graph, flowchart, etc.).";
-
-            return await CallOpenAIAsync(prompt);
-        }
-
-        public async Task<string> GenerateCodeAsync(string mermaidDiagram, string requirements)
-        {
-            var prompt = $@"Based on the following Mermaid diagram and requirements, generate production-ready code. Include all necessary files, components, and configurations:
-
-Mermaid Diagram:
-{mermaidDiagram}
-
-Requirements:
-{requirements}
-
-Please generate:
-1. Backend API code (ASP.NET Core)
-2. Frontend code (Angular)
-3. Database models
-4. Configuration files
-5. README with setup instructions
-
-Organize the code in a clear folder structure and include comments explaining key functionality.";
-
-            return await CallOpenAIAsync(prompt);
-        }
-
-        private async Task<string> CallOpenAIAsync(string prompt)
+        public async Task<string> CallOpenAIAsync(Prompt prompt)
         {
             var apiKey = _configuration["OpenAI:ApiKey"];
             var apiEndpoint = _configuration["OpenAI:BaseUrl"];
             string deploymentName = "gpt-4o-mini";
             string apiVersion = "2024-08-01-preview";
-            
+
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
             var requestBody = new
             {
                 messages = new[]
                 {
-                    new { role = "user", content = prompt }
+                    new { role = "user", content = prompt.UserPrompt }
                 },
                 max_tokens = 10000,
                 temperature = 0.7
